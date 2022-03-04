@@ -1,0 +1,20 @@
+1) Running zookeeper
+%KAFKA_HOME%\bin\windows\zookeeper-server-start.bat %KAFKA_HOME%\etc\kafka\zookeeper.properties
+
+2) Running broker 0
+%KAFKA_HOME%\bin\windows\kafka-server-start.bat %KAFKA_HOME%\etc\kafka\server-0.properties
+
+3) Running broker 1
+%KAFKA_HOME%\bin\windows\kafka-server-start.bat %KAFKA_HOME%\etc\kafka\server-1.properties
+
+4) Running broker 2
+%KAFKA_HOME%\bin\windows\kafka-server-start.bat %KAFKA_HOME%\etc\kafka\server-2.properties
+
+5) Creating topic
+%KAFKA_HOME%\bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --topic invoice --partitions 5 --replication-factor 3 --config segment.bytes=1000000
+
+6) List topics
+%KAFKA_HOME%\bin\windows\kafka-topics.bat --bootstrap-server localhost:9092 --list
+
+7) Describe topic
+%KAFKA_HOME%\bin\windows\kafka-topics.bat --describe  --bootstrap-server localhost:9092 --topic invoice
