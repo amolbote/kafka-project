@@ -18,3 +18,7 @@
 
 7) Describe topic
 %KAFKA_HOME%\bin\windows\kafka-topics.bat --describe  --bootstrap-server localhost:9092 --topic invoice
+
+8) Create consumer
+%KAFKA_HOME%\bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic default-product-events --from-beginning --group group1
+%KAFKA_HOME%\bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic auto-product-events --from-beginning --group group1
