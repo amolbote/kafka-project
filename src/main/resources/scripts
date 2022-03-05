@@ -1,3 +1,12 @@
+CURL command to test API
+______________________________________________________________________________________
+curl --location --request POST 'http://localhost:8080/v1/add-product-event' \
+--header 'Content-Type: application/json' \
+--data-raw '{"id":1,"product":{"id":2,"name":"XYZ"}}'
+
+
+Useful Kafka commands for running and testing kafka set up
+_______________________________________________________________________________________
 1) Running zookeeper
 %KAFKA_HOME%\bin\windows\zookeeper-server-start.bat %KAFKA_HOME%\etc\kafka\zookeeper.properties
 
