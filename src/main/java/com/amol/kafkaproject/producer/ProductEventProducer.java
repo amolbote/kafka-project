@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
+import java.util.concurrent.ExecutionException;
+
 @Component
 @Slf4j
 public class ProductEventProducer {
@@ -20,6 +22,7 @@ public class ProductEventProducer {
 
     @Autowired
     ObjectMapper objectMapper; // to convert java object to json string
+
     public void sendProductEvent(ProductEvent productEvent) throws JsonProcessingException {
         Integer key = productEvent.getId();
         String value = objectMapper.writeValueAsString(productEvent);
@@ -43,5 +46,22 @@ public class ProductEventProducer {
 
     private void handleSuccess(Integer key, String value, SendResult<Integer, String> result) {
         log.info("Message sent successfully for the key : {} and value is : {}, partition is : {}", key, value, result.getRecordMetadata().partition());
+    }
+
+    public SendResult<Integer, String> sendProductEventSynchronously(ProductEvent productEvent) throws JsonProcessingException {
+        Integer key = productEvent.getId();
+        String value = objectMapper.writeValueAsString(productEvent);
+        SendResult<Integer, String> sendResult = null;
+        try {
+            //get() will wait for response
+            sendResult = kafkaTemplate.sendDefault(key, value).get();
+            log.info("Message sent successfully for the key : {} and value is : {}, partition is : {}", key, value, sendResult.getRecordMetadata().partition());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            log.error("Error sending message for the key : {} and value is : {}, Exception is : {}", key, value, e.getMessage());
+        } catch (Exception e) {
+            log.error("Error sending message for the key : {} and value is : {}, Exception is : {}", key, value, e.getMessage());
+        }
+        return sendResult;
     }
 }
