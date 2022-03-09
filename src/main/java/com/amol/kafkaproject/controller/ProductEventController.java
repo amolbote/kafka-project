@@ -25,7 +25,8 @@ public class ProductEventController {
         log.info("------------- Before sendProductEvent -----------------------");
         //productEventProducer.sendProductEvent(productEvent);
         //SendResult<Integer, String> sendResult = productEventProducer.sendProductEventSynchronously(productEvent);
-        productEventProducer.sendProductEventUsingTopic(productEvent);
+        //productEventProducer.sendProductEventUsingTopic(productEvent);
+        productEventProducer.sendProductEventUsingProducerRecord(productEvent);
         //log.info("SendResult is : {}", sendResult.toString());
         log.info("------------- After sendProductEvent -----------------------");
         return ResponseEntity.status(HttpStatus.CREATED).body(productEvent);
