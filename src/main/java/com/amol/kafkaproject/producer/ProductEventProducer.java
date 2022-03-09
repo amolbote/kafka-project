@@ -4,6 +4,7 @@ import com.amol.kafkaproject.domain.ProductEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -45,11 +46,28 @@ public class ProductEventProducer {
     public void sendProductEventUsingTopic(ProductEvent productEvent) throws JsonProcessingException {
         Integer key = productEvent.getId();
         String value = objectMapper.writeValueAsString(productEvent);
-        //ListenableFuture<SendResult<Integer, String>> listenableFuture = kafkaTemplate.sendDefault(key, value);
-        //ListenableFuture<SendResult<Integer, String>> listenableFuture = kafkaTemplate.sendDefault(key, value);
-
         // using send method with topic, key and value
         ListenableFuture<SendResult<Integer, String>> listenableFuture = kafkaTemplate.send(topic, key, value);
+
+        listenableFuture.addCallback(new ListenableFutureCallback<SendResult<Integer, String>>() {
+            @Override
+            public void onFailure(Throwable ex) {
+                handleFailure(key, value, ex);
+            }
+
+            @Override
+            public void onSuccess(SendResult<Integer, String> result) {
+                handleSuccess(key, value, result);
+            }
+        });
+    }
+
+    public void sendProductEventUsingProducerRecord(ProductEvent productEvent) throws JsonProcessingException {
+        Integer key = productEvent.getId();
+        String value = objectMapper.writeValueAsString(productEvent);
+        // using send method with ProducerRecord
+        ProducerRecord<Integer, String> producerRecord = new ProducerRecord<>(topic, null, key, value);
+        ListenableFuture<SendResult<Integer, String>> listenableFuture = kafkaTemplate.send(producerRecord);
 
         listenableFuture.addCallback(new ListenableFutureCallback<SendResult<Integer, String>>() {
             @Override
