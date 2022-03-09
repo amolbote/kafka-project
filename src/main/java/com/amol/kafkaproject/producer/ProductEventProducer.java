@@ -23,10 +23,34 @@ public class ProductEventProducer {
     @Autowired
     ObjectMapper objectMapper; // to convert java object to json string
 
+    private String topic = "default-product-events";
+
     public void sendProductEvent(ProductEvent productEvent) throws JsonProcessingException {
         Integer key = productEvent.getId();
         String value = objectMapper.writeValueAsString(productEvent);
         ListenableFuture<SendResult<Integer, String>> listenableFuture = kafkaTemplate.sendDefault(key, value);
+        listenableFuture.addCallback(new ListenableFutureCallback<SendResult<Integer, String>>() {
+            @Override
+            public void onFailure(Throwable ex) {
+                handleFailure(key, value, ex);
+            }
+
+            @Override
+            public void onSuccess(SendResult<Integer, String> result) {
+                handleSuccess(key, value, result);
+            }
+        });
+    }
+
+    public void sendProductEventUsingTopic(ProductEvent productEvent) throws JsonProcessingException {
+        Integer key = productEvent.getId();
+        String value = objectMapper.writeValueAsString(productEvent);
+        //ListenableFuture<SendResult<Integer, String>> listenableFuture = kafkaTemplate.sendDefault(key, value);
+        //ListenableFuture<SendResult<Integer, String>> listenableFuture = kafkaTemplate.sendDefault(key, value);
+
+        // using send method with topic, key and value
+        ListenableFuture<SendResult<Integer, String>> listenableFuture = kafkaTemplate.send(topic, key, value);
+
         listenableFuture.addCallback(new ListenableFutureCallback<SendResult<Integer, String>>() {
             @Override
             public void onFailure(Throwable ex) {
