@@ -24,8 +24,9 @@ public class ProductEventController {
         //invoke kafka producer
         log.info("------------- Before sendProductEvent -----------------------");
         //productEventProducer.sendProductEvent(productEvent);
-        SendResult<Integer, String> sendResult = productEventProducer.sendProductEventSynchronously(productEvent);
-        log.info("SendResult is : {}", sendResult.toString());
+        //SendResult<Integer, String> sendResult = productEventProducer.sendProductEventSynchronously(productEvent);
+        productEventProducer.sendProductEventUsingTopic(productEvent);
+        //log.info("SendResult is : {}", sendResult.toString());
         log.info("------------- After sendProductEvent -----------------------");
         return ResponseEntity.status(HttpStatus.CREATED).body(productEvent);
     }
